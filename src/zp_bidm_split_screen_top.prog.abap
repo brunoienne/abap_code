@@ -13,8 +13,8 @@ DATA: v_usrname     TYPE ad_namtext,
       v_easy_split  TYPE REF TO cl_gui_easy_splitter_container,
       v_cont_up     TYPE REF TO cl_gui_container,
       v_cont_down   TYPE REF TO cl_gui_container,
-      v_alv_orig    TYPE REF TO cl_gui_alv_grid,
-      v_alv_path    TYPE REF TO cl_gui_alv_grid,
+      v_alv_up    TYPE REF TO cl_gui_alv_grid,
+      v_alv_down    TYPE REF TO cl_gui_alv_grid,
       w_layout_path TYPE lvc_s_layo.
 
 DATA: t_rows        TYPE lvc_t_row,

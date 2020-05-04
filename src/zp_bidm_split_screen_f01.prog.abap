@@ -68,7 +68,7 @@ FORM zf_criaoo_alv .
   FIELD-SYMBOLS: <f_fcat> LIKE LINE OF lt_fcat.
 
 *** Criar o ALV TOPO
-  CREATE OBJECT v_alv_orig
+  CREATE OBJECT v_alv_up
     EXPORTING
       i_parent          = v_cont_up " container de cima
     EXCEPTIONS
@@ -84,7 +84,7 @@ FORM zf_criaoo_alv .
   ENDIF.
 
 *** Criar o ALV RODAPE
-  CREATE OBJECT v_alv_path
+  CREATE OBJECT v_alv_down
     EXPORTING
       i_parent          = v_cont_down " container de baixo
     EXCEPTIONS
@@ -121,7 +121,7 @@ FORM zf_criaoo_alv .
   ls_fcat-reptext   = 'Categoria'.
   APPEND ls_fcat TO lt_fcat. CLEAR ls_fcat.
 
-  CALL METHOD v_alv_orig->set_table_for_first_display " preenche alv acima
+  CALL METHOD v_alv_up->set_table_for_first_display " preenche alv acima
     EXPORTING
       is_layout                     = lw_layout
       it_toolbar_excluding          = lt_toolbar
@@ -176,7 +176,7 @@ FORM zf_criaoo_alv .
   w_layout_path-ctab_fname = 'LVC_COLOR'.
   w_layout_path-zebra      = abap_false.
 
-  CALL METHOD v_alv_path->set_table_for_first_display " preenche alv baixo
+  CALL METHOD v_alv_down->set_table_for_first_display " preenche alv baixo
     EXPORTING
       is_layout                     = w_layout_path
       it_toolbar_excluding          = lt_toolbar
@@ -193,24 +193,24 @@ FORM zf_criaoo_alv .
                WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
   ENDIF.
 
-  CALL METHOD v_alv_path->register_edit_event
+  CALL METHOD v_alv_down->register_edit_event
     EXPORTING
       i_event_id = cl_gui_alv_grid=>mc_evt_enter.
 
   " Registra eventos pro Container TOPO
-  CREATE OBJECT v_event_orig.
-  SET HANDLER v_event_orig->double_click FOR v_alv_orig.
+  CREATE OBJECT v_event_up.
+  SET HANDLER v_event_up->double_click FOR v_alv_up.
 
-  CALL METHOD v_alv_orig->set_toolbar_interactive.
+  CALL METHOD v_alv_up->set_toolbar_interactive.
 
   " Registra eventos pro Container RODAPE
-  CREATE OBJECT v_event_path.
+  CREATE OBJECT v_event_down.
   SET HANDLER:
-   v_event_path->handle_user_command FOR v_alv_path,
-   v_event_path->handle_toolbar      FOR v_alv_path,
-   v_event_path->handle_menu_button  FOR v_alv_path.
+   v_event_down->handle_user_command FOR v_alv_down,
+   v_event_down->handle_toolbar      FOR v_alv_down,
+   v_event_down->handle_menu_button  FOR v_alv_down.
 
-  CALL METHOD v_alv_path->set_toolbar_interactive.
+  CALL METHOD v_alv_down->set_toolbar_interactive.
 
 
 ENDFORM.                    " ZF_CRIAOO_ALV

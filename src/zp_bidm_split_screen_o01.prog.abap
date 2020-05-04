@@ -9,9 +9,9 @@ MODULE zm_status_9001 OUTPUT.
   SET PF-STATUS 'Z_STANDARD'.
   SET TITLEBAR 'Z_TITULO' WITH v_usrname.
 
-  IF v_alv_orig IS BOUND. " verifica se obj alv foi criado
+  IF v_alv_up IS BOUND. " verifica se obj alv foi criado
 
-    CALL METHOD v_alv_orig->refresh_table_display " limpa 1º alv
+    CALL METHOD v_alv_up->refresh_table_display " limpa 1º alv
       EXPORTING
         i_soft_refresh = abap_true
       EXCEPTIONS
