@@ -33,6 +33,6 @@ MODULE zm_create_screen OUTPUT.
 
   PERFORM zf_criaoo_cont. " cria container maior
   PERFORM zf_monta_alv_up.  " cria container de cima
-  PERFORM zf_monta_alv_down.
+  PERFORM zf_monta_alv_down. " cria container de baixo
 
 ENDMODULE.                 " ZM_CREATE_SCREEN  OUTPUT
