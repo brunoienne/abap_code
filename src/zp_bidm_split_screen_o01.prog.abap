@@ -32,6 +32,7 @@ MODULE zm_create_screen OUTPUT.
   CHECK v_cont_pai IS INITIAL.
 
   PERFORM zf_criaoo_cont. " cria container maior
-  PERFORM zf_criaoo_alv.  " associa container split up e down c/ alv's
+  PERFORM zf_monta_alv_up.  " cria container de cima
+  PERFORM zf_monta_alv_down.
 
 ENDMODULE.                 " ZM_CREATE_SCREEN  OUTPUT

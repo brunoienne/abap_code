@@ -53,7 +53,7 @@ ENDFORM.                    " ZF_CRIAOO_CONT
 *&---------------------------------------------------------------------*
 *&      Form  ZF_CRIAOO_ALV
 *&---------------------------------------------------------------------*
-FORM zf_criaoo_alv .
+FORM zf_monta_alv_up .
 
   DATA:  lt_fcat    TYPE lvc_t_fcat,
          l_structn  TYPE dd02l-tabname,
@@ -66,6 +66,7 @@ FORM zf_criaoo_alv .
     ls_fcat               TYPE            lvc_s_fcat.
 
   FIELD-SYMBOLS: <f_fcat> LIKE LINE OF lt_fcat.
+
 
 *** Criar o ALV TOPO
   CREATE OBJECT v_alv_up
@@ -83,42 +84,32 @@ FORM zf_criaoo_alv .
                WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
   ENDIF.
 
-*** Criar o ALV RODAPE
-  CREATE OBJECT v_alv_down
-    EXPORTING
-      i_parent          = v_cont_down " container de baixo
-    EXCEPTIONS
-      error_cntl_create = 1
-      error_cntl_init   = 2
-      error_cntl_link   = 3
-      error_dp_create   = 4
-      OTHERS            = 5.
 
   lw_layout-zebra      = abap_true.
   lw_layout-cwidth_opt = abap_true.
-  lw_layout-grid_title = 'Lista de motoristas'.
+  lw_layout-grid_title = 'Companhias aéreas'.
 
   lw_variant-report = sy-repid.
   lw_variant-handle = '0001'. " ID do alv
 
   ls_fcat-col_pos   = 1.
-  ls_fcat-fieldname = 'ID'.
-  ls_fcat-reptext   = 'Id motorista'.
+  ls_fcat-fieldname = 'CARRID'.
+  ls_fcat-reptext   = 'Sigla'.
   APPEND ls_fcat TO lt_fcat. CLEAR ls_fcat.
 
   ls_fcat-col_pos   = 2.
-  ls_fcat-fieldname = 'NOME'.
+  ls_fcat-fieldname = 'CARRNAME'.
   ls_fcat-reptext   = 'Nome'.
   APPEND ls_fcat TO lt_fcat. CLEAR ls_fcat.
 
   ls_fcat-col_pos   = 3.
-  ls_fcat-fieldname = 'CNH'.
-  ls_fcat-reptext   = 'Cnh'.
+  ls_fcat-fieldname = 'CURRCODE'.
+  ls_fcat-reptext   = 'Moeda'.
   APPEND ls_fcat TO lt_fcat. CLEAR ls_fcat.
 
   ls_fcat-col_pos   = 4.
-  ls_fcat-fieldname = 'Categoria'.
-  ls_fcat-reptext   = 'Categoria'.
+  ls_fcat-fieldname = 'URL'.
+  ls_fcat-reptext   = 'Site'.
   APPEND ls_fcat TO lt_fcat. CLEAR ls_fcat.
 
   CALL METHOD v_alv_up->set_table_for_first_display " preenche alv acima
@@ -126,7 +117,7 @@ FORM zf_criaoo_alv .
       is_layout                     = lw_layout
       it_toolbar_excluding          = lt_toolbar
     CHANGING
-      it_outtab                     = t_motorista " tabela com dados
+      it_outtab                     = t_companhias " tabela com dados
       it_fieldcatalog               = lt_fcat     " tabela catalogos
     EXCEPTIONS
       invalid_parameter_combination = 1
@@ -138,36 +129,94 @@ FORM zf_criaoo_alv .
                WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
   ENDIF.
 
+  " Registra eventos pro Container TOPO
+  CREATE OBJECT v_event_up.
+  SET HANDLER v_event_up->double_click FOR v_alv_up.
+
+  CALL METHOD v_alv_up->set_toolbar_interactive.
+
+
+ENDFORM.                    " ZF_CRIAOO_ALV
+
+*&---------------------------------------------------------------------*
+*&      Form  ZF_SELECT_DATA
+*&---------------------------------------------------------------------*
+*----------------------------------------------------------------------*
+FORM zf_select_data .
+
+  SELECT * FROM scarr INTO TABLE t_companhias.
+
+  SELECT SINGLE b~name_text
+    FROM usr21 AS a INNER JOIN adrp AS b
+      ON b~persnumber = a~persnumber
+    INTO v_usrname
+   WHERE a~bname EQ sy-uname.
+
+ENDFORM.                    " ZF_SELECT_DATA
+
+
+*&---------------------------------------------------------------------*
+*&      Form  ZF_MONTA_ALV
+*&---------------------------------------------------------------------*
+FORM zf_monta_alv_down.
+
+  DATA:lt_fcat    TYPE lvc_t_fcat,
+       l_structn  TYPE dd02l-tabname,
+       lw_layout  TYPE lvc_s_layo,
+       lt_toolbar TYPE ui_functions,
+       lw_variant TYPE disvariant,
+       l_save     TYPE c VALUE 'A'.
+
+  DATA:
+    ls_fcat               TYPE            lvc_s_fcat.
+
+  FIELD-SYMBOLS: <f_fcat> LIKE LINE OF lt_fcat.
+
+  IF v_alv_down IS BOUND.
+    CALL METHOD v_alv_down->free.
+  ENDIF.
+
+*** Criar o ALV RODAPE
+  CREATE OBJECT v_alv_down
+    EXPORTING
+      i_parent          = v_cont_down " container de baixo
+    EXCEPTIONS
+      error_cntl_create = 1
+      error_cntl_init   = 2
+      error_cntl_link   = 3
+      error_dp_create   = 4
+      OTHERS            = 5.
+
   CLEAR lt_fcat[].
 
   ls_fcat-col_pos   = 1.
-  ls_fcat-fieldname = 'PLACA'.
-  ls_fcat-reptext   = 'Placa'.
+  ls_fcat-fieldname = 'CONNID'.
+  ls_fcat-reptext   = 'ID Comp.'.
   APPEND ls_fcat TO lt_fcat. CLEAR ls_fcat.
 
   ls_fcat-col_pos   = 2.
-  ls_fcat-fieldname = 'MARCA'.
-  ls_fcat-reptext   = 'Marca'.
+  ls_fcat-fieldname = 'CITYFROM'.
+  ls_fcat-reptext   = 'Origem'.
   APPEND ls_fcat TO lt_fcat. CLEAR ls_fcat.
 
   ls_fcat-col_pos   = 3.
-  ls_fcat-fieldname = 'MODELO'.
-  ls_fcat-reptext   = 'Modelo'.
+  ls_fcat-fieldname = 'CITYTO'.
+  ls_fcat-reptext   = 'Destino'.
   APPEND ls_fcat TO lt_fcat. CLEAR ls_fcat.
 
   ls_fcat-col_pos   = 4.
-  ls_fcat-fieldname = 'ANO'.
-  ls_fcat-reptext   = 'Ano'.
+  ls_fcat-fieldname = 'FLTIME'.
+  ls_fcat-reptext   = 'Hr. saída'.
   APPEND ls_fcat TO lt_fcat. CLEAR ls_fcat.
 
   ls_fcat-col_pos = 5.
-  ls_fcat-fieldname = 'CATEGORIA'.
-  ls_fcat-reptext   = 'Categoria'.
+  ls_fcat-fieldname = 'ARRTIME'.
+  ls_fcat-reptext   = 'Hr. chegada'.
   APPEND ls_fcat TO lt_fcat. CLEAR ls_fcat.
 
   ls_fcat-col_pos   = 6.
-  ls_fcat-fieldname = 'BLOQUEADO'.
-  ls_fcat-reptext   = 'Bloqueado'.
+  ls_fcat-fieldname = 'DISTANCE'.
+  ls_fcat-reptext   = 'Distância'.
   APPEND ls_fcat TO lt_fcat. CLEAR ls_fcat.
 
   lw_variant-handle = '0002'.
@@ -175,13 +224,14 @@ FORM zf_criaoo_alv .
   w_layout_path            = lw_layout.
   w_layout_path-ctab_fname = 'LVC_COLOR'.
   w_layout_path-zebra      = abap_false.
+  w_layout_path-grid_title = 'Voos'.
 
   CALL METHOD v_alv_down->set_table_for_first_display " preenche alv baixo
     EXPORTING
       is_layout                     = w_layout_path
       it_toolbar_excluding          = lt_toolbar
     CHANGING
-      it_outtab                     = t_veiculos
+      it_outtab                     = t_voos
       it_fieldcatalog               = lt_fcat
     EXCEPTIONS
       invalid_parameter_combination = 1
@@ -193,16 +243,6 @@ FORM zf_criaoo_alv .
                WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
   ENDIF.
 
-  CALL METHOD v_alv_down->register_edit_event
-    EXPORTING
-      i_event_id = cl_gui_alv_grid=>mc_evt_enter.
-
-  " Registra eventos pro Container TOPO
-  CREATE OBJECT v_event_up.
-  SET HANDLER v_event_up->double_click FOR v_alv_up.
-
-  CALL METHOD v_alv_up->set_toolbar_interactive.
-
   " Registra eventos pro Container RODAPE
   CREATE OBJECT v_event_down.
   SET HANDLER:
@@ -212,22 +252,4 @@ FORM zf_criaoo_alv .
 
   CALL METHOD v_alv_down->set_toolbar_interactive.
 
-
-ENDFORM.                    " ZF_CRIAOO_ALV
-
-*&---------------------------------------------------------------------*
-*&      Form  ZF_SELECT_DATA
-*&---------------------------------------------------------------------*
-*----------------------------------------------------------------------*
-FORM zf_select_data .
-
-  SELECT * FROM ztb_motorista_20 INTO TABLE t_motorista.
-  SELECT * FROM ztb_veiculos_20 INTO TABLE t_veiculos.
-
-  SELECT SINGLE b~name_text
-    FROM usr21 AS a INNER JOIN adrp AS b
-      ON b~persnumber = a~persnumber
-    INTO v_usrname
-   WHERE a~bname EQ sy-uname.
-
-ENDFORM.                    " ZF_SELECT_DATA
+ENDFORM.                    " ZF_MONTA_ALV

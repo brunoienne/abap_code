@@ -17,11 +17,11 @@ DATA: v_usrname     TYPE ad_namtext,
       v_alv_down    TYPE REF TO cl_gui_alv_grid,
       w_layout_path TYPE lvc_s_layo.
 
-DATA: t_rows        TYPE lvc_t_row,
-      t_hdrows      TYPE lvc_t_row.
+DATA: t_companhias  TYPE TABLE OF scarr,
+      t_voos        TYPE TABLE OF spfli.
 
-DATA: t_motorista   TYPE TABLE OF ztb_motorista_20,
-      t_veiculos    TYPE TABLE OF ztb_veiculos_20.
+DATA: s_companhias  TYPE scarr,
+      s_voos        TYPE spfli.
 
 SELECTION-SCREEN BEGIN OF BLOCK b01 WITH FRAME.
 PARAMETERS: p_matnr TYPE mara-matnr.
