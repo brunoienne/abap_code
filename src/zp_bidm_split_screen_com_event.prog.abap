@@ -1,10 +1,10 @@
 *&---------------------------------------------------------------------*
-*& PoolMóds.         ZTESTE_BIDM_054
+*& PoolMóds.         ZSD027
 *&
 *&---------------------------------------------------------------------*
 
-INCLUDE zp_bidm_split_screen_top. " global Data
-INCLUDE zp_bidm_split_screen_c01. " Class
-INCLUDE zp_bidm_split_screen_o01. " PBO-Modules
-INCLUDE zp_bidm_split_screen_i01. " PAI-Modules
-INCLUDE zp_bidm_split_screen_f01. " FORM-Routines
+INCLUDE ZP_BIDM_SPLIT_SCREEN_TOP. " global Data
+INCLUDE ZP_BIDM_SPLIT_SCREEN_C01. " Class
+INCLUDE ZP_BIDM_SPLIT_SCREEN_O01. " PBO-Modules
+INCLUDE ZP_BIDM_SPLIT_SCREEN_I01. " PAI-Modules
+INCLUDE ZP_BIDM_SPLIT_SCREEN_F01. " FORM-Routines
