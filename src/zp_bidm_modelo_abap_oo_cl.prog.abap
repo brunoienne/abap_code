@@ -202,6 +202,9 @@ CLASS lcl_relat IMPLEMENTATION.
 
     DATA: ls_key          TYPE            salv_s_layout_key.
 
+    DATA: lt_col          TYPE            salv_t_column_ref,
+          ls_col          TYPE            salv_s_column_ref.
+
     CHECK check_relat( ) IS INITIAL.
 
     " Cria objeto ALV
@@ -242,12 +245,21 @@ CLASS lcl_relat IMPLEMENTATION.
         lo_column_list->set_optimize( abap_true ).
         lo_column_list->set_key_fixation( abap_true ).
 
-        " Set nome colunas
-        lo_column   = lo_column_list->get_column( 'CAMPO1' ).
-        lo_column->set_long_text( 'Campo1' ).
+        lt_col = lo_column_list->get( ).
+        LOOP AT lt_col INTO ls_col.
+          lo_column ?= ls_col-r_column.
+          CASE ls_col-columnname.
+            WHEN 'CAMPO1'.
+            WHEN 'CAMPO2'.
+          ENDCASE.
+        ENDLOOP.
 
-        lo_column   = lo_column_list->get_column( 'CAMPO2' ).
-        lo_column->set_long_text( 'Campo2' ).
+        " Set nome colunas
+*        lo_column   = lo_column_list->get_column( 'CAMPO1' ).
+*        lo_column->set_long_text( 'Campo1' ).
+*
+*        lo_column   = lo_column_list->get_column( 'CAMPO2' ).
+*        lo_column->set_long_text( 'Campo2' ).
 
       CATCH cx_salv_not_found.
     ENDTRY.
