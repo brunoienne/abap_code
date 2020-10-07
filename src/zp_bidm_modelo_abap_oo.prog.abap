@@ -49,8 +49,7 @@ SELECTION-SCREEN END OF BLOCK b01.
 *--------------------------------------------------------------------
 * Classe relatório
 *--------------------------------------------------------------------
-INCLUDE ZP_BIDM_MODELO_ABAP_OO_CL.
-*INCLUDE zp_modelo_abap_oo_cl.
+INCLUDE zp_bidm_modelo_abap_oo_cl.
 
 
 *--------------------------------------------------------------------
