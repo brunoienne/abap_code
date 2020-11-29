@@ -1,2 +1,2 @@
 # Códigos ABAP
-Códigos ABAP desenvolvidos na CLIPTECH 2020
+Códigos ABAP desenvolvidos na CLIPTECH
