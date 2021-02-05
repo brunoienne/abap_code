@@ -2,9 +2,9 @@
 *                             ClipTech                              *
 *&-----------------------------------------------------------------&*
 * Programa ..: ZWM003                                               *
-* Transação..: ZWM003                                               *
+* Transação..:                                                      *
 * Módulo.....: WM                                                   *
-* Especif....: XX001 -                                              *
+* Especif....: XX001 - Modelo de ALV                                *
 * Funcional..:                                                      *
 *&---------------------------------------------------------------- *&
 * Descrição .: Integração UD Numero Série                           *
@@ -14,7 +14,7 @@
 *                           HISTÓRICO                               *
 *&-----------------------------------------------------------------*&
 * DATA       | REQUEST    | RESPONSÁVEL | DESCRIÇÃO                 *
-* 22/04/2020 | ER1K932679 | Bruno Morais|                           *
+* 22/04/2020 | ER1K932679 |  BIMORAIS   |                           *
 *&-----------------------------------------------------------------&*
 
 REPORT  zp_bidm_integracao_serie.
@@ -22,42 +22,56 @@ REPORT  zp_bidm_integracao_serie.
 *--------------------------------------------------------------------
 * Tabelas Banco de Dados
 *--------------------------------------------------------------------
+TABLES: mara, marc.
 
 *--------------------------------------------------------------------
 * Constantes
 *--------------------------------------------------------------------
 CONSTANTS:
-      c_002(3)            TYPE            c             VALUE '002',
-      c_o                 TYPE            c             VALUE 'O'.
+      c_ud(2)             TYPE            c             VALUE 'UD'  ,
+      c_o                 TYPE            c             VALUE 'O'   ,
+      c_002(3)            TYPE            c             VALUE '002' ,
+      c_hist(4)           TYPE            c             VALUE '@96@',
+      c_green(4)          TYPE            c             VALUE '@08@',
+      c_yellow(4)         TYPE            c             VALUE '@09@',
+      c_red(4)            TYPE            c             VALUE '@0A@'.
 
 
 *--------------------------------------------------------------------
-* Variáveis globais
+* Variáveis
 *--------------------------------------------------------------------
-DATA: v_ucomm             TYPE            sy-ucomm,
-      v_sernr             TYPE            seri-sernr,
-      v_charg             TYPE            mcha-licha,
-      v_matnr             TYPE            marc-matnr,
-      v_werks             TYPE            marc-werks,
-      v_msg1(80)          TYPE            c,
-      v_msg2(65)          TYPE            c,
-      v_msg3(65)          TYPE            c.
+DATA: lv_okcode           TYPE sy-ucomm.
+
+*--------------------------------------------------------------------
+* Tipos
+*--------------------------------------------------------------------
+TYPES: BEGIN OF relat_type,
+      matnr              TYPE             mara-matnr,
+      maktx              TYPE             makt-maktx,
+      werks              TYPE             mard-werks,
+      sernr              TYPE             seri-sernr,
+      licha              TYPE             mcha-licha,
+      status             TYPE             icon_d,
+      mensg              TYPE             string,
+      t_return           TYPE             bapiret2 OCCURS 0,
+  END OF relat_type.
 
 *----------------------------------------------------------------------
 * Tela de Seleção
 *----------------------------------------------------------------------
-SELECTION-SCREEN BEGIN OF BLOCK b01 WITH FRAME.
-PARAMETERS: p_matnr TYPE marc-matnr OBLIGATORY,
-            p_werks TYPE marc-werks OBLIGATORY,
-            p_charg TYPE c AS CHECKBOX.
+SELECTION-SCREEN BEGIN OF BLOCK b01 WITH FRAME TITLE text-b01.
+SELECT-OPTIONS: s_matnr FOR mara-matnr NO INTERVALS,
+                s_werks FOR marc-werks NO-EXTENSION.
+PARAMETERS: p_charg TYPE c AS CHECKBOX.
 SELECTION-SCREEN END OF BLOCK b01.
 
 
 *--------------------------------------------------------------------
-* Includes
+* Classe relatório
 *--------------------------------------------------------------------
-INCLUDE ZP_BIDM_INTEGRACAO_SERIE_CL.
-*INCLUDE zwm003_cl.
+INCLUDE zp_bidm_integracao_serie_cl.
+INCLUDE zp_bidm_integracao_serie_o01.
+INCLUDE zp_bidm_integracao_serie_i01.
 
 *----------------------------------------------------------------------
 * Eventos de tela
@@ -65,56 +79,15 @@ INCLUDE ZP_BIDM_INTEGRACAO_SERIE_CL.
 INITIALIZATION.
   CREATE OBJECT go_integra.
 
+AT SELECTION-SCREEN ON p_varian.
+  go_integra->set_variant( variant = p_varian ).
+
+AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_varian.
+  p_varian = go_integra->f4_variant( ).
+
 *----------------------------------------------------------------------
 START-OF-SELECTION.
 *----------------------------------------------------------------------
-  go_integra->check_marc( ).
-
-
-*&---------------------------------------------------------------------*
-*&      Module  STATUS_9000  OUTPUT
-*&---------------------------------------------------------------------*
-MODULE status_9000 OUTPUT.
-  SET PF-STATUS 'Z_STANDARD'.
-  SET TITLEBAR 'NUMSERIE'.
-
-  LOOP AT SCREEN.
-
-    IF screen-group1 = 'CH1'. " lote fornecedor
-      IF p_charg IS INITIAL.
-        screen-active = 0.
-      ELSE.
-        screen-active = 1.
-      ENDIF.
-    ENDIF.
-
-    MODIFY SCREEN.
-
-  ENDLOOP.
-
-ENDMODULE.                 " STATUS_9000  OUTPUT
-
-*&---------------------------------------------------------------------*
-*&      Module  USER_COMMAND_9000  INPUT
-*&---------------------------------------------------------------------*
-MODULE user_command_9000 INPUT.
-
-  CASE sy-ucomm.
-    WHEN 'ENTER'.
-      go_integra->processing_data( ).
-  ENDCASE.
-
-ENDMODULE.                 " USER_COMMAND_9000  INPUT
-
-*&---------------------------------------------------------------------*
-*&      Module  USER_EXIT_9000  INPUT
-*&---------------------------------------------------------------------*
-MODULE user_exit_9000 INPUT.
-  CASE sy-ucomm.
-    WHEN '&F03' OR 'FIN'.
-      SET SCREEN 0.
-      LEAVE SCREEN.
-    WHEN '&F12'.
-      LEAVE PROGRAM.
-  ENDCASE.
-ENDMODULE.                 " USER_EXIT_9000  INPUT
+  go_integra->select_data( ).
+  go_integra->processing_data( ).
+  go_integra->output_data( ).
