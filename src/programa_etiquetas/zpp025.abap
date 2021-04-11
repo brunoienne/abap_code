@@ -9,7 +9,7 @@
 *&---------------------------------------------------------------- *&
 * Descrição .: Nova versão do programa de impressão de etq.[ZPP002] *
 *&-----------------------------------------------------------------*&
-* Objetivo ..:                                                      *
+* Objetivo ..: Impressão de etiquetas de Ordem de Produção          *
 *&-----------------------------------------------------------------*&
 *                           HISTÓRICO                               *
 *&-----------------------------------------------------------------*&
@@ -27,7 +27,6 @@ TABLES: ztb_etiq_magna, ztbpp_tenpao, ztb_etiq_seyon.
 * Tipos
 *--------------------------------------------------------------------
 TYPES:
-
 BEGIN OF afpo_type,
   aufnr TYPE afpo-aufnr,
   psmng TYPE afpo-psmng,
@@ -36,32 +35,13 @@ END OF afpo_type,
 
 BEGIN OF ausp_type,
   objek TYPE ausp-objek,
+  atinn TYPE ausp-atinn,
   atwrt TYPE ausp-atwrt,
 END OF ausp_type,
 
 BEGIN OF auspx_type,
   matnr TYPE ausp-objek,
-END OF auspx_type,
-
-BEGIN OF op_type,
-  aufnr   TYPE zcontrol_etq-aufnr,
-  vol_de  TYPE zcontrol_etq-vol_de,
-  vol_ate TYPE zcontrol_etq-vol_ate,
-  matnr   TYPE zcontrol_etq-matnr,
-  qtde    TYPE zcontrol_etq-qtde,
-  dtimp   TYPE zcontrol_etq_pin-dtimp,
-  sel,
-END OF op_type.
-
-TYPES: BEGIN OF magna_ty.
-        INCLUDE TYPE ztb_etiq_magna.
-TYPES: sel.
-TYPES: END OF magna_ty.
-
-TYPES: BEGIN OF ficosa_ty.
-        INCLUDE TYPE ztb_etiq_fic.
-TYPES: sel.
-TYPES: END OF ficosa_ty.
+END OF auspx_type.
 
 *----------------------------------------------------------------------
 * Tela de Seleção
@@ -116,14 +96,14 @@ PARAMETERS: p_print TYPE rsposel-device OBLIGATORY MODIF ID zeb,
             p_slws  TYPE n LENGTH 2 MODIF ID zeb.
 SELECTION-SCREEN END OF BLOCK b04.
 
-" Reeimpressão etiqueta Magna/HUF
+" Reeimpressão etiqueta Magna/HUF/Bezel Seoyon
 SELECTION-SCREEN BEGIN OF BLOCK b05 WITH FRAME TITLE text.
-SELECT-OPTIONS: s_rod FOR ztb_etiq_magna-rodada NO-EXTENSION MODIF ID mag,
-                s_dat FOR sy-datum DEFAULT sy-datum NO INTERVALS NO-EXTENSION MODIF ID mag,
+SELECT-OPTIONS: s_rod  FOR ztb_etiq_magna-rodada NO-EXTENSION MODIF ID mag,
+                s_dat  FOR sy-datum DEFAULT sy-datum NO INTERVALS NO-EXTENSION MODIF ID mag,
                 s_seqm FOR ztb_etiq_magna-seq NO-EXTENSION MODIF ID mag.
 SELECTION-SCREEN END OF BLOCK b05.
 
-" Opções p/ impressão Magna/HUF
+" Opções p/ impressão Magna/HUF/Bezel Seoyon
 SELECTION-SCREEN BEGIN OF BLOCK b06 WITH FRAME TITLE text2.
 PARAMETERS: p_rodada TYPE n LENGTH 3 OBLIGATORY MODIF ID mgn,
             p_qtop   TYPE n LENGTH 4 OBLIGATORY MODIF ID mgn.
@@ -145,9 +125,9 @@ SELECTION-SCREEN END OF BLOCK b08.
 *--------------------------------------------------------------------
 * Includes
 *--------------------------------------------------------------------
-INCLUDE zpp025_top.
-INCLUDE zpp025_cl.
-INCLUDE zpp025_f01.
+INCLUDE zpp025_cl.  " class
+INCLUDE zpp025_i01. " PAI modules
+INCLUDE zpp025_o01. " PBO modules
 
 *--------------------------------------------------------------------
 * Eventos de tela
