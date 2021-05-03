@@ -7,7 +7,7 @@ CLASS lcl_local DEFINITION.
       CLASS-METHODS:
         return_boolean
           RETURNING
-            VALUE(r_valor) TYPE boolean.
+            VALUE(r_valor) TYPE flag.
   
   ENDCLASS.
   
