@@ -1,2 +1,2 @@
 # Códigos ABAP
-Códigos ABAP desenvolvidos na CLIPTECH
+Códigos ABAP desenvolvidos na CLIPTECH.
