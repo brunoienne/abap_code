@@ -1,0 +1,5 @@
+
+PROCESS BEFORE OUTPUT.
+  MODULE exibe_faturamento.
+
+PROCESS AFTER INPUT.
